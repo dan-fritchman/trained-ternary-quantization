@@ -4,8 +4,8 @@ from torchvision.datasets import ImageFolder
 import torchvision.transforms as transforms
 
 
-TRAIN_DIR = '/home/ubuntu/data/tiny-imagenet-200/training'
-VAL_DIR = '/home/ubuntu/data/tiny-imagenet-200/validation'
+TRAIN_DIR = '~/data/tiny-imagenet-200/training'
+VAL_DIR = '~/data/tiny-imagenet-200/validation'
 
 
 """It assumes that training image data is in the following form:
