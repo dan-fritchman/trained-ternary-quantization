@@ -59,7 +59,7 @@ def optimization_step(model, loss, x_batch, y_batch, optimizer_list, t):
 
     # compute logloss
     loss_value = loss(logits, y_batch)
-    batch_loss = loss_value.data[0]
+    batch_loss = loss_value.item()
 
     # compute accuracies
     pred = F.softmax(logits)
