@@ -6,7 +6,7 @@ from squeezenet import SqueezeNet
 
 def get_model(num_classes=200):
 
-    model = SqueezeNet(num_classes=200)
+    model = SqueezeNet(num_classes=num_classes)
 
     # create different parameter groups
     weights = [
