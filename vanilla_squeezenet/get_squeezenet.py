@@ -4,9 +4,9 @@ from torch.nn.init import constant
 from squeezenet import SqueezeNet
 
 
-def get_model():
+def get_model(num_classes=200):
 
-    model = SqueezeNet()
+    model = SqueezeNet(num_classes=200)
 
     # create different parameter groups
     weights = [
