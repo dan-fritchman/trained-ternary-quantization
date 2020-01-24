@@ -81,9 +81,12 @@ def model_calibration(true, pred, n_bins=10):
     plt.ylabel('accuracy')
     plt.title('reliability curve')
 
-def own_count_params(model, is_cpu=True):
-    tensor_input = torch.randn(1, 3, 32, 32) if is_cpu else torch.randn(1, 3, 32, 32).cuda()
-    flops, params = profile(model, inputs=tensor_input, ))
+def own_count_params(model):
+    try:
+        flops, params = profile(model, inputs=(torch.randn(1, 3, 32, 32).cuda(), ))
+    except:
+        print('Ran with cpu inputs. Might have counting bugs')
+        flops, params = profile(model, inputs=(torch.randn(1, 3, 32, 32), ))
     print('* MACs: {:,}'.format(flops).replace('.0', ''))
     print('* Params: {:,}'.format(params).replace('.0', ''))
 
