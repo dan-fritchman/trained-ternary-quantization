@@ -82,7 +82,7 @@ def model_calibration(true, pred, n_bins=10):
 
 def own_count_params(model):
     flops, params = profile(model, inputs=(torch.randn(1, 3, 32, 32), ))
-    print('* FLOPs: {:,}'.format(flops).replace('.0', ''))
+    print('* MACs: {:,}'.format(flops).replace('.0', ''))
     print('* Params: {:,}'.format(params).replace('.0', ''))
 
 def count_params(model):
