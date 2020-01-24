@@ -6,9 +6,9 @@ sys.path.append('../vanilla_squeezenet/')
 from squeezenet import SqueezeNet
 
 
-def get_model(learning_rate=1e-3):
+def get_model(learning_rate=1e-3, num_classes=200):
 
-    model = SqueezeNet()
+    model = SqueezeNet(num_classes=num_classes)
     
     # set the first layer not trainable
     model.features[0].weight.requires_grad = False

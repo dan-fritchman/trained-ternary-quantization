@@ -3,6 +3,7 @@ from PIL import Image, ImageEnhance
 from torchvision.datasets import ImageFolder
 import torchvision.transforms as transforms
 import torchvision
+import torch
 
 
 TRAIN_DIR = '~/data/tiny-imagenet-200/training'
