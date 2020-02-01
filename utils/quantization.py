@@ -127,10 +127,10 @@ def optimization_step(model, loss, x_batch, y_batch, optimizer_list, t):
 
     return batch_loss, batch_accuracy, batch_top5_accuracy
 
-def truncate_model(model)
+def truncate_model(model):
     all_kernels = [
         (n, p.data) for n, p in model.named_parameters()
-        if ('weight' in n and not 'bn' in n and not 'features.1.' in n 
+        if ('weight' in n and not 'bn' in n and not 'features.1.' in n
             and not 'classifier' in n and not 'features.0.' in n)
     ]
 
@@ -143,11 +143,11 @@ def truncate_model(model)
             zero = abs(weight - 0)
             neg_one = abs(weight + 1)
             if one < zero and one < neg_one:
-            weights[i] = 1
+                weights[i] = 1
             elif zero < one and zero < neg_one:
-            weights[i] = 0
+                weights[i] = 0
             else:
-            weights[i] = -1
+                weights[i] = -1
         weights = weights.view(shape)
         return weights
 

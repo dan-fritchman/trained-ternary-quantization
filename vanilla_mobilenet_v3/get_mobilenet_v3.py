@@ -9,9 +9,6 @@ def get_model(learning_rate=1e-3, num_classes=200):
 
     model = MobileNetV3(n_class=num_classes, input_size=40)
 
-    # set the first layer not trainable
-    model.features[0][0].weight.requires_grad = False
-
     # find all weights first,
     # exclude last weights for params.weights
     # rest are for weights_to_be_quantized
@@ -21,13 +18,9 @@ def get_model(learning_rate=1e-3, num_classes=200):
         (n, p) for n, p in model.named_parameters()
         if 'weight' in n and 'features.14.' not in n and not re.match(r'features\.(\d+)\.conv\.(1|4|8)', n) and not ('features.0.1' in n or 'features.12.1' in n)
     ]
-    weights_to_be_quantized = [
-        p for n, p in all_conv_weights
-        if not ('features.0.0' in n)
-    ]
 
     # I'm assuming we draw weights and biases from the last convolutional layer
-    weights = [model.features[14].weight]
+    weights = all_conv_weights
     biases = [model.features[14].bias]
 
     bn_weights = [
@@ -43,7 +36,6 @@ def get_model(learning_rate=1e-3, num_classes=200):
 
     params = [
         {'params': weights, 'weight_decay': 3e-4},
-        {'params': weights_to_be_quantized},
         {'params': biases},
         {'params': bn_weights},
         {'params': bn_biases}
