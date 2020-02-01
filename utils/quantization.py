@@ -127,7 +127,7 @@ def optimization_step(model, loss, x_batch, y_batch, optimizer_list, t):
 
     return batch_loss, batch_accuracy, batch_top5_accuracy
 
-def truncate_model(model)
+def truncate_model(model):
     all_kernels = [
         (n, p.data) for n, p in model.named_parameters()
         if ('weight' in n and not 'bn' in n and not 'features.1.' in n 
