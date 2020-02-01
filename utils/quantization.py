@@ -143,11 +143,11 @@ def truncate_model(model):
             zero = abs(weight - 0)
             neg_one = abs(weight + 1)
             if one < zero and one < neg_one:
-            weights[i] = 1
+                weights[i] = 1
             elif zero < one and zero < neg_one:
-            weights[i] = 0
+                weights[i] = 0
             else:
-            weights[i] = -1
+                weights[i] = -1
         weights = weights.view(shape)
         return weights
 
