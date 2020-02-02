@@ -55,7 +55,7 @@ def get_cifar10():
     train_size = len(trainset)
     val_size = len(testset)
     num_classes = len(classes)
-    return train_iterator, val_iterator, train_size, val_size, num_classes
+    return train_iterator, val_iterator, num_classes
 
 
 def get_image_folders():
