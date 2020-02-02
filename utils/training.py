@@ -156,7 +156,7 @@ def regular_run(get_model, train_iterator, val_iterator, num_classes=10, step_fn
       verbose=True, threshold=0.01, threshold_mode='abs'
   )
 
-  print('epoch logloss  accuracy    top5_accuracy time  (first value: train, second value: val)')
+  print('\nepoch logloss  accuracy    top5_accuracy time  (first value: train, second value: val)\n')
   all_losses = train(
       model, loss, step_fn,
       train_iterator, val_iterator, optimizer, n_epochs,
