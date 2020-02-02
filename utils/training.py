@@ -2,7 +2,7 @@ from torch.autograd import Variable
 import torch.nn.functional as F
 import time
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-
+from math import ceil
 
 
 def optimization_step(model, loss, x_batch, y_batch, optimizer):
@@ -164,6 +164,7 @@ def regular_run(get_model, train_iterator, val_iterator, num_classes=10, step_fn
       patience=8, threshold=0.01,  # for early stopping
       lr_scheduler=lr_scheduler
   )
+  plot_accuracy(all_losses)
   return all_losses
 
 def _is_early_stopping(all_losses, patience, threshold):
