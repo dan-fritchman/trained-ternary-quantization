@@ -1,9 +1,18 @@
 import torch.nn as nn
 import torch.optim as optim
 from torch.nn.init import constant
-from squeezenet import SqueezeNet
+from models import * 
 
+model_dict = {
+    'mobilenet': lambda: MobileNet(),
+    'mobilenetv2': lambda: MobileNetV2(),
+    'mobilenet_small': lambda: MyMobileNet(width_mul=.25),
+    'fd_mobilenet_small': lambda: MyMobileNet(width_mul=.25, is_fd=True),
+    'mobilenetv3_small_x0.35': lambda: MobileNetV3(n_class=10, width_mult=.35),
+    'mobilenetv3_small_x0.75': lambda: MobileNetV3(n_class=10, width_mult=.75),
+}
 
+'''
 def get_model(num_classes=200):
 
     model = FdMobileNet(num_classes=num_classes)
@@ -39,3 +48,5 @@ def get_model(num_classes=200):
     loss = nn.CrossEntropyLoss().cuda()
     model = model.cuda()  # move the model to gpu
     return model, loss, optimizer
+'''
+print(model_dict['mobilenetv3_small_x0.75']())
