@@ -30,7 +30,7 @@ def optimization_step(model, loss, x_batch, y_batch, optimizer):
 
 
 def train(model, loss, optimization_step_fn,
-          train_iterator, val_iterator, n_epochs=30,
+          train_iterator, val_iterator, optimizer, n_epochs=30,
           patience=10, threshold=0.01, lr_scheduler=None):
     """
     Train 'model' by minimizing 'loss' using 'optimization_step_fn'
@@ -53,7 +53,7 @@ def train(model, loss, optimization_step_fn,
         for x_batch, y_batch in train_iterator:
 
             batch_loss, batch_accuracy, batch_top5_accuracy = optimization_step_fn(
-                model, loss, x_batch, y_batch
+                model, loss, x_batch, y_batch, optimizer
             )
             running_loss += batch_loss
             running_accuracy += batch_accuracy
@@ -159,7 +159,7 @@ def regular_run(get_model, train_iterator, val_iterator, num_classes=10, step_fn
   print('epoch logloss  accuracy    top5_accuracy time  (first value: train, second value: val)')
   all_losses = train(
       model, loss, step_fn,
-      train_iterator, val_iterator, n_epochs,
+      train_iterator, val_iterator, optimizer, n_epochs,
       patience=8, threshold=0.01,  # for early stopping
       lr_scheduler=lr_scheduler
   )
