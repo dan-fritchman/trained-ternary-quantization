@@ -4,7 +4,6 @@ import time
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from math import ceil
 
-
 def optimization_step(model, loss, x_batch, y_batch, optimizer):
     """Make forward pass and update model parameters with gradients."""
 
