@@ -53,7 +53,7 @@ def train(model, loss, optimization_step_fn,
         for x_batch, y_batch in train_iterator:
 
             batch_loss, batch_accuracy, batch_top5_accuracy = optimization_step_fn(
-                model, loss, x_batch, y_batch, optimizer
+                model, loss, x_batch, y_batch
             )
             running_loss += batch_loss
             running_accuracy += batch_accuracy
@@ -142,8 +142,8 @@ def _evaluate(model, loss, val_iterator):
 
     return loss_value/total_samples, accuracy/total_samples, top5_accuracy/total_samples
 
-def optimization_step_fn(model, loss, x_batch, y_batch, optimizer):
-    return optimization_step(model, loss, x_batch, y_batch, optimizer)
+def optimization_step_fn(model, loss, x_batch, y_batch):
+    return optimization_step(model, loss, x_batch, y_batch)
 
 def regular_run(get_model, train_iterator, val_iterator, num_classes=10, step_fn=optimization_step_fn, batch_size = 128):
   model, loss, optimizer = get_model(num_classes=num_classes)
