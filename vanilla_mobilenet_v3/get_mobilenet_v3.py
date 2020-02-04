@@ -36,7 +36,7 @@ def get_model(learning_rate=1e-3, num_classes=200, input_size=32):
     bn_biases = [
         p for n, p in model.named_parameters()
         if 'bias' in n and not 'features.14.' in n and ('features.0.1' in n or 'features.12.1' in n
-        or re.match(r'features\.(\d+)\.conv\.(1|4|8)', n))
+        or re.match(r'features\.(\d+)\.(1|4|8)', n))
     ]
 
     params = [
@@ -45,6 +45,7 @@ def get_model(learning_rate=1e-3, num_classes=200, input_size=32):
         {'params': bn_weights},
         {'params': bn_biases}
     ]
+
     optimizer = optim.Adam(params, lr=learning_rate)
 
     loss = nn.CrossEntropyLoss() #.cuda()
