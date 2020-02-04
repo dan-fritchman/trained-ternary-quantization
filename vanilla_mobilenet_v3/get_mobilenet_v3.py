@@ -7,7 +7,7 @@ from mobilenet_v3 import MobileNetV3
 
 def get_model(learning_rate=1e-3, num_classes=200):
 
-    model = MobileNetV3(n_class=num_classes, input_size=40)
+    model = MobileNetV3(n_class=num_classes, input_size=32)
 
     # find all weights first,
     # exclude last weights for params.weights
