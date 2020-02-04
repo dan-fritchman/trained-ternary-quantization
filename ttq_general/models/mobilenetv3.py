@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from thop import profile
 
 # from https://github.com/kuan-wang/pytorch-mobilenet-v3
 
@@ -223,8 +224,11 @@ class MobileNetV3(nn.Module):
                     nn.init.zeros_(m.bias)
 
 def test():
-    net = MobileNetV3(n_class=10, width_mult=.35)
+    net = MobileNetV3(n_class=10, input_size=32, width_mult=0.35)
     x = torch.randn(2,3,32,32)
+    flops, params = profile(net, inputs=(x, ))
+    print('* MACs: {:,.2f}'.format(flops).replace('.00', ''))
+    print('* Params: {:,.2f}'.format(params).replace('.00', ''))
     y = net(x)
     print(y.size())
 

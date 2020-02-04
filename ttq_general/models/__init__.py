@@ -1,3 +1,4 @@
+from .squeezenet import *
 from .vgg import *
 from .dpn import *
 from .lenet import *
@@ -14,4 +15,5 @@ from .mobilenet import *
 from .mobilenet_mine import *
 from .mobilenetv2 import *
 from .mobilenetv3 import *
+from .mobilenetv3_impl2 import *
 from .efficientnet import *
