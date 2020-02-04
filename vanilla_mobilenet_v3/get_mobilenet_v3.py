@@ -41,7 +41,7 @@ def get_model(learning_rate=1e-3, num_classes=200, input_size=32):
 
     params = [
         {'params': weights, 'weight_decay': 3e-4},
-        {'params': biases},
+        # {'params': biases},
         {'params': bn_weights},
         {'params': bn_biases}
     ]
