@@ -2,8 +2,7 @@ from torch.autograd import Variable
 import torch.nn.functional as F
 import time
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-
-
+from math import ceil
 
 def optimization_step(model, loss, x_batch, y_batch, optimizer):
     """Make forward pass and update model parameters with gradients."""
@@ -31,7 +30,7 @@ def optimization_step(model, loss, x_batch, y_batch, optimizer):
 
 
 def train(model, loss, optimization_step_fn,
-          train_iterator, val_iterator, n_epochs=30,
+          train_iterator, val_iterator, optimizer, n_epochs=30,
           patience=10, threshold=0.01, lr_scheduler=None):
     """
     Train 'model' by minimizing 'loss' using 'optimization_step_fn'
@@ -54,7 +53,7 @@ def train(model, loss, optimization_step_fn,
         for x_batch, y_batch in train_iterator:
 
             batch_loss, batch_accuracy, batch_top5_accuracy = optimization_step_fn(
-                model, loss, x_batch, y_batch
+                model, loss, x_batch, y_batch, optimizer
             )
             running_loss += batch_loss
             running_accuracy += batch_accuracy
@@ -143,6 +142,29 @@ def _evaluate(model, loss, val_iterator):
 
     return loss_value/total_samples, accuracy/total_samples, top5_accuracy/total_samples
 
+def optimization_step_fn(model, loss, x_batch, y_batch, optimizer):
+    return optimization_step(model, loss, x_batch, y_batch, optimizer)
+
+def regular_run(get_model, train_iterator, val_iterator, num_classes=10, step_fn=optimization_step_fn, batch_size = 128):
+  model, loss, optimizer = get_model(num_classes=num_classes)
+  batch_size = 128
+  n_epochs = 200
+  n_batches = ceil(len(train_iterator.dataset)/batch_size)
+
+  lr_scheduler = ReduceLROnPlateau(
+      optimizer, mode='max', factor=0.1, patience=4,
+      verbose=True, threshold=0.01, threshold_mode='abs'
+  )
+
+  print('\nepoch logloss  accuracy    top5_accuracy time  (first value: train, second value: val)\n')
+  all_losses = train(
+      model, loss, step_fn,
+      train_iterator, val_iterator, optimizer, n_epochs,
+      patience=8, threshold=0.01,  # for early stopping
+      lr_scheduler=lr_scheduler
+  )
+  plot_accuracy(all_losses)
+  return all_losses
 
 def _is_early_stopping(all_losses, patience, threshold):
     """It decides if training must stop."""
@@ -166,7 +188,7 @@ def _is_early_stopping(all_losses, patience, threshold):
         # if not enough epochs to compare with
         return False
 
-def print_plots(all_losses):
+def plot_loss(all_losses):
     # loss
     epochs = [x[0] for x in all_losses]
     plt.plot(epochs, [x[1] for x in all_losses], label='train')
@@ -174,13 +196,19 @@ def print_plots(all_losses):
     plt.legend()
     plt.xlabel('epoch')
     plt.ylabel('loss')
+
+def plot_accuracy(all_losses):
     # accuracy
+    epochs = [x[0] for x in all_losses]
     plt.plot(epochs, [x[3] for x in all_losses], label='train')
     plt.plot(epochs, [x[4] for x in all_losses], label='val')
     plt.legend()
     plt.xlabel('epoch')
     plt.ylabel('accuracy')
-    # top 5 accuracy
+
+def plot_top5_accuracy(all_losses):
+    # to p 5 accuracy
+    epochs = [x[0] for x in all_losses]
     plt.plot(epochs, [x[5] for x in all_losses], label='train')
     plt.plot(epochs, [x[6] for x in all_losses], label='val')
     plt.legend()
@@ -204,6 +232,4 @@ lr_scheduler = ReduceLROnPlateau(
 
 # total number of batches in the train set
 n_batches
-
-
 '''
