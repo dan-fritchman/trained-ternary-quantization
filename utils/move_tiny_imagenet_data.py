@@ -21,7 +21,7 @@ And in the same way arrange validation data.
 parser = argparse.ArgumentParser()
 parser.add_argument(
     '--data_dir', type=str,
-    default='~/data/tiny-imagenet-200/',
+    default='/home/ubuntu/data/tiny-imagenet-200/',
     help='A path to the tiny-imagenet-200 folder.'
 )
 args = parser.parse_args()

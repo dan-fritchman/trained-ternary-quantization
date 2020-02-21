@@ -68,14 +68,14 @@ class SqueezeNet(nn.Module):
             Fire(384, 64, 256, 256),
             Fire(512, 64, 256, 256, residual=True)
         )
-        self.avg_pool = nn.AvgPool2d(7) if self.num_classes == 200 else nn.AvgPool2d(kernel_size=4, stride=4)
+
         # Final convolution is initialized differently form the rest
         final_conv = nn.Conv2d(512, self.num_classes, kernel_size=1)
         self.classifier = nn.Sequential(
             nn.Dropout(p=0.6),
             final_conv,
             nn.ReLU(inplace=True),
-            self.avg_pool
+            nn.AvgPool2d(7)
         )
 
         for m in self.modules():

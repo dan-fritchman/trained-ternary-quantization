@@ -59,7 +59,7 @@ def optimization_step(model, loss, x_batch, y_batch, optimizer_list, t):
 
     # compute logloss
     loss_value = loss(logits, y_batch)
-    batch_loss = loss_value.item()
+    batch_loss = loss_value.data[0]
 
     # compute accuracies
     pred = F.softmax(logits)
@@ -126,35 +126,3 @@ def optimization_step(model, loss, x_batch, y_batch, optimizer_list, t):
         k.data = quantize(k_fp.data, w_p, w_n, t)
 
     return batch_loss, batch_accuracy, batch_top5_accuracy
-
-def truncate_model(model):
-    all_kernels = [
-        (n, p.data) for n, p in model.named_parameters()
-        if ('weight' in n and not 'bn' in n and not 'features.1.' in n
-            and not 'classifier' in n and not 'features.0.' in n)
-    ]
-
-    def set_one_and_neg_one(weights):
-        shape = weights.shape
-        weights = weights.view(-1)
-        for i in range(len(weights)):
-            weight = weights[i]
-            one = abs(weight - 1)
-            zero = abs(weight - 0)
-            neg_one = abs(weight + 1)
-            if one < zero and one < neg_one:
-                weights[i] = 1
-            elif zero < one and zero < neg_one:
-                weights[i] = 0
-            else:
-                weights[i] = -1
-        weights = weights.view(shape)
-        return weights
-
-    new_state_dict = model.state_dict().copy()
-    for name, weights in all_kernels:
-        weights = set_one_and_neg_one(weights)
-        new_state_dict[name] = weights
-        print(name)
-    model.load_state_dict(new_state_dict)
-    return model

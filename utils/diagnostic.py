@@ -5,8 +5,6 @@ from sklearn.metrics import confusion_matrix
 from tqdm import tqdm
 from torch.autograd import Variable
 import torch.nn.functional as F
-import torch
-from thop import profile
 
 
 """Tools for diagnostic of a learned model.
@@ -81,14 +79,6 @@ def model_calibration(true, pred, n_bins=10):
     plt.ylabel('accuracy')
     plt.title('reliability curve')
 
-def own_count_params(model):
-    try:
-        flops, params = profile(model, inputs=(torch.randn(1, 3, 32, 32).cuda(), ))
-    except:
-        print('Ran with cpu inputs. Might have counting bugs')
-        flops, params = profile(model, inputs=(torch.randn(1, 3, 32, 32), ))
-    print('* MACs: {:,}'.format(flops).replace('.0', ''))
-    print('* Params: {:,}'.format(params).replace('.0', ''))
 
 def count_params(model):
     # model - pytorch's nn.Module object
