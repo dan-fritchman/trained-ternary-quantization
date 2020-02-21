@@ -1,11 +1,9 @@
 import torch.nn as nn
 import torch.optim as optim
-
-import sys
-# sys.path.append('../vanilla_squeezenet/')
+from torch.nn.init import constant, kaiming_uniform
 from models import *
 
-def _get_model(model_name):
+def get_model_from_dict(model_name):
     model_dict = {
         'squeezenet': lambda: SqueezeNet(num_classes=10),
         'mobilenet': lambda: MyMobileNet(),
@@ -23,39 +21,42 @@ def _get_model(model_name):
         raise NotImplementedError
     return model_dict[model_name]()
 
-    
+def get_model(model_name, learning_rate=1e-3):
 
-
-'''
-def get_model(learning_rate=1e-3, num_classes=200):
-
-    model = SqueezeNet(num_classes=num_classes)
+    model = get_model_from_dict(model_name)
     
     # set the first layer not trainable
-    model.features[0].weight.requires_grad = False
-
-    # all conv layers except the first and the last
-    all_conv_weights = [
-        (n, p) for n, p in model.named_parameters()
-        if 'weight' in n and not 'bn' in n and not 'features.1.' in n
-    ]
-    weights_to_be_quantized = [
-        p for n, p in all_conv_weights
-        if not ('classifier' in n or 'features.0.' in n)
-    ]
+    # create different parameter groups
+    #return list(model.named_parameters())
     
-    # the last layer
-    weights = [model.classifier[1].weight]
-    biases = [model.classifier[1].bias]
+    # create different parameter groups
+
+    # classifier (last layer (linear))
+
+     # set the first layer not trainable
+    model.features.conv0.weight.requires_grad = False
+
+    # the last fc layer
+    weights = [
+        p for n, p in model.named_parameters()
+        if 'classifier.weight' in n
+    ]
+    biases = [model.classifier.bias]
+    
+    # all conv layers except the first
+    weights_to_be_quantized = [
+        p for n, p in model.named_parameters()
+        if 'conv' in n and ('dense' in n or 'transition' in n)
+    ]
     
     # parameters of batch_norm layers
     bn_weights = [
         p for n, p in model.named_parameters()
-        if ('bn' in n or 'features.1.' in n) and 'weight' in n
+        if 'norm' in n and 'weight' in n
     ]
     bn_biases = [
         p for n, p in model.named_parameters()
-        if ('bn' in n or 'features.1.' in n) and 'bias' in n
+        if 'norm' in n and 'bias' in n
     ]
 
     params = [
@@ -67,9 +68,6 @@ def get_model(learning_rate=1e-3, num_classes=200):
     ]
     optimizer = optim.Adam(params, lr=learning_rate)
 
-    # loss function
-    criterion = nn.CrossEntropyLoss().cuda()
-    # move the model to gpu
-    model = model.cuda()
-    return model, criterion, optimizer
-'''
+    loss = nn.CrossEntropyLoss().cuda()
+    model = model.cuda()  # move the model to gpu
+    return model, loss, optimizer
