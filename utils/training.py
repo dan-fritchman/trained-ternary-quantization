@@ -12,7 +12,7 @@ def optimization_step(model, loss, x_batch, y_batch, optimizer):
 
     # compute logloss
     loss_value = loss(logits, y_batch)
-    batch_loss = loss_value.data[0]
+    batch_loss = loss_value.item()
 
     # compute accuracies
     pred = F.softmax(logits)
@@ -108,7 +108,7 @@ def _accuracy(true, pred, top_k=(1,)):
     result = []
     for k in top_k:
         correct_k = correct[:k].view(-1).float().sum(0)
-        result.append(correct_k.div_(batch_size).data[0])
+        result.append(correct_k.div_(batch_size).item())
 
     return result
 
@@ -128,7 +128,7 @@ def _evaluate(model, loss, val_iterator):
         logits = model(x_batch)
 
         # compute logloss
-        batch_loss = loss(logits, y_batch).data[0]
+        batch_loss = loss(logits, y_batch).item()
 
         # compute accuracies
         pred = F.softmax(logits)
