@@ -2,10 +2,12 @@ import numpy as np
 from PIL import Image, ImageEnhance
 from torchvision.datasets import ImageFolder
 import torchvision.transforms as transforms
+import torchvision
+import torch
 
 
-TRAIN_DIR = '/home/ubuntu/data/tiny-imagenet-200/training'
-VAL_DIR = '/home/ubuntu/data/tiny-imagenet-200/validation'
+TRAIN_DIR = '~/data/tiny-imagenet-200/training'
+VAL_DIR = '~/data/tiny-imagenet-200/validation'
 
 
 """It assumes that training image data is in the following form:
@@ -21,6 +23,39 @@ TRAIN_DIR/class1/image99.jpg
 
 And the same for validation data.
 """
+
+
+def get_cifar10():
+    batch_size = 128
+
+    # Data
+    print('==> Preparing data..')
+    transform_train = transforms.Compose([
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    ])
+
+    transform_test = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    ])
+
+    trainset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform_train)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
+
+    testset = torchvision.datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_test)
+    testloader = torch.utils.data.DataLoader(testset, batch_size=256, shuffle=False, num_workers=2)
+
+    classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck')
+
+    train_iterator = trainloader
+    val_iterator = testloader
+    train_size = len(trainset)
+    val_size = len(testset)
+    num_classes = len(classes)
+    return train_iterator, val_iterator, train_size, val_size, num_classes
 
 
 def get_image_folders():
