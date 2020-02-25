@@ -6,7 +6,7 @@ import sys
 from fd_mobilenet_v3 import FdMobileNetV3Imp2
 
 
-def load_model(model, file_name='fd-mobilenet-v3-x0_32.pth'):
+def load_model(model, file_name):
     def reformat_dict(state):
         reformat_state = {}
         for key in state:
