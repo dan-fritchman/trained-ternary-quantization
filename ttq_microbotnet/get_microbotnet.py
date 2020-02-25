@@ -18,9 +18,9 @@ def load_model(model, file_name='fd-mobilenet-v3-x0_32.pth'):
     model.load_state_dict(reformat_state)
     # do we have to return?
 
-def get_model(learning_rate=1e-3):
+def get_model(learning_rate=1e-3, width_multiplier=0.32):
 
-    model = FdMobileNetV3Imp2(classes_num=10, input_size=32, width_multiplier=0.25, mode='small')
+    model = FdMobileNetV3Imp2(classes_num=10, input_size=32, width_multiplier=width_multiplier, mode='small')
 
     # first layer is not trainable
     first_layer = model.features[0][0]
