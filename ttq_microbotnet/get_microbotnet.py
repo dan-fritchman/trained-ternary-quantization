@@ -93,7 +93,7 @@ def get_model_only_big(learning_rate=1e-3, width_multiplier=0.32):
     # Only bottlenecks [1:11] are quantized
 
     weights_to_be_quantized = [
-        (p.shape, reduce(lambda x, y: x*y, p.shape)) for n, p in model.features[1:11].named_parameters()
+        p for n, p in model.features[1:11].named_parameters()
         if 'conv' in n and 'weight' in n
         and 'lastBN' not in n and 'fc' not in n
         and reduce(lambda x, y: x*y, p.shape) > 1000
