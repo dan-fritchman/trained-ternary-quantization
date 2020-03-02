@@ -20,7 +20,7 @@ def load_model(model, file_name):
     model.load_state_dict(reformat_state)
     # do we have to return?
 
-def get_model(learning_rate=1e-3, width_multiplier=0.32, optimizer_func=optim.Adam, min_size_quantize = 1000, only_conv = False):
+def get_model(learning_rate=1e-3, width_multiplier=0.32, optimizer_func=optim.Adam, min_size_quantize=1000, only_conv=False):
 
     model = FdMobileNetV3Imp2(classes_num=10, input_size=32, width_multiplier=width_multiplier, mode='small')
 
