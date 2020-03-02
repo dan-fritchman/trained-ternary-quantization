@@ -5,6 +5,7 @@ import torch.optim as optim
 import sys
 sys.path.append('../vanilla_microbotnet/')
 from fd_mobilenet_v3 import FdMobileNetV3Imp2
+from functools import reduce
 
 
 def load_model(model, file_name):
@@ -41,7 +42,7 @@ def get_model(learning_rate=1e-3, width_multiplier=0.32):
     # Only bottlenecks [1:11] are quantized
     weights_to_be_quantized = [
         p for n, p in model.features[1:11].named_parameters()
-        if 'conv' in n and 'lastBN' not in n and 'fc' not in n
+        if 'conv' in n and 'weight' in n and 'lastBN' not in n and 'fc' not in n
     ]
 
     # parameters of batch_norm layers
@@ -70,7 +71,7 @@ def get_model(learning_rate=1e-3, width_multiplier=0.32):
     model = model.cuda()  # move the model to gpu
     return model, loss, optimizer
 
-def get_model2(learning_rate=1e-3, width_multiplier=0.32):
+def get_model_only_big(learning_rate=1e-3, width_multiplier=0.32):
 
     model = FdMobileNetV3Imp2(classes_num=10, input_size=32, width_multiplier=width_multiplier, mode='small')
 
@@ -90,13 +91,15 @@ def get_model2(learning_rate=1e-3, width_multiplier=0.32):
 
 
     # Only bottlenecks [1:11] are quantized
-    '''
+
     weights_to_be_quantized = [
-        p for n, p in model.features[1:11].named_parameters()
-        if 'conv' in n and 'lastBN' not in n and 'fc' not in n
+        (p.shape, reduce(lambda x, y: x*y, p.shape)) for n, p in model.features[1:11].named_parameters()
+        if 'conv' in n and 'weight' in n
+        and 'lastBN' not in n and 'fc' not in n
+        and reduce(lambda x, y: x*y, p.shape) > 1000
     ]
-    '''
-    weights_to_be_quantized = []
+
+
     # parameters of batch_norm layers
     bn_weights = [model.features[0][1].weight, model.features[11][1].weight] + \
         [
