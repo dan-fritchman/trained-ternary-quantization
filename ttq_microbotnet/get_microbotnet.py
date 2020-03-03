@@ -20,6 +20,14 @@ def load_model(model, file_name):
     model.load_state_dict(reformat_state)
     # do we have to return?
 
+def is_to_be_quantized(n, only_conv):
+    if only_conv:
+        return 'conv' in n and 'fc' not in n
+    return 'conv' in n or 'fc' in n
+
+def is_greater_than_min_quantize(p, min_size_quantize):
+    return reduce(lambda x, y: x*y, p.shape) > min_size_quantize
+
 def get_model(learning_rate=1e-3, momentum=None, 
     weight_decay=None, width_multiplier=0.32,
     optimizer_func=optim.Adam, min_size_quantize=1000,
@@ -54,9 +62,9 @@ def get_model(learning_rate=1e-3, momentum=None,
 
     weights_to_be_quantized = [
         p for n, p in model.features[1:11].named_parameters()
-        if is_to_be_quantized(n) and 'weight' in n
+        if is_to_be_quantized(n, only_conv) and 'weight' in n
         and 'lastBN' not in n
-        and is_greater_than_min_quantize(p)
+        and is_greater_than_min_quantize(p, min_size_quantize)
     ]
 
     # parameters of batch_norm layers
@@ -90,3 +98,10 @@ def get_model(learning_rate=1e-3, momentum=None,
     loss = nn.CrossEntropyLoss().cuda()
     model = model.cuda()  # move the model to gpu
     return model, loss, optimizer
+
+def print_quantize_info(model, only_conv, min_size_quantize):
+    print([
+        (n, p.shape, reduce(lambda x, y: x*y, p.shape)) for n, p in model.features[1:11].named_parameters()
+        if is_to_be_quantized(n, only_conv) and 'weight' in n
+        and 'lastBN' not in n
+        and is_greater_than_min_quantize(p, min_size_quantize)])
