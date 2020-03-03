@@ -20,9 +20,13 @@ def load_model(model, file_name):
     model.load_state_dict(reformat_state)
     # do we have to return?
 
-def get_model(learning_rate=1e-3, width_multiplier=0.32, optimizer_func=optim.Adam, min_size_quantize=1000, only_conv=False):
+def get_model(learning_rate=1e-3, momentum=None, 
+    weight_decay=None, width_multiplier=0.32,
+    optimizer_func=optim.Adam, min_size_quantize=1000,
+    only_conv=False):
 
-    model = FdMobileNetV3Imp2(classes_num=10, input_size=32, width_multiplier=width_multiplier, mode='small')
+    model = FdMobileNetV3Imp2(classes_num=10, input_size=32,
+        width_multiplier=width_multiplier, mode='small')
 
     # first layer is not trainable
     first_layer = model.features[0][0]
@@ -75,7 +79,13 @@ def get_model(learning_rate=1e-3, width_multiplier=0.32, optimizer_func=optim.Ad
         {'params': bn_biases}
     ]
     #params: parameter group to train seperately
-    optimizer = optimizer_func(params, lr=learning_rate)
+    if optimizer_func == optim.Adam:
+        optimizer = optim.Adam(params, lr=learning_rate)
+    elif optimizer_func == optim.SGD:
+        optimizer = optim.SGD(params, lr=learning_rate, 
+            momentum=momentum, weight_decay=weight_decay)
+    else:
+        raise Exception('only ADAM and SGD supported')
 
     loss = nn.CrossEntropyLoss().cuda()
     model = model.cuda()  # move the model to gpu
