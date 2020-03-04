@@ -28,10 +28,8 @@ def is_to_be_quantized(n, only_conv):
 def is_greater_than_min_quantize(p, min_size_quantize):
     return reduce(lambda x, y: x*y, p.shape) > min_size_quantize
 
-def get_model(learning_rate=1e-3, momentum=None, 
-    weight_decay=None, width_multiplier=0.32,
-    optimizer_func=optim.Adam, min_size_quantize=1000,
-    only_conv=False):
+def get_model(learning_rate=1e-3, width_multiplier=0.32,
+    min_size_quantize=1000, only_conv=False):
 
     model = FdMobileNetV3Imp2(classes_num=10, input_size=32,
         width_multiplier=width_multiplier, mode='small')
@@ -52,14 +50,6 @@ def get_model(learning_rate=1e-3, momentum=None,
 
 
     # Only bottlenecks [1:11] are quantized
-    def is_to_be_quantized(n):
-        if only_conv:
-            return 'conv' in n and 'fc' not in n
-        return 'conv' in n or 'fc' in n 
-
-    def is_greater_than_min_quantize(p):
-        return reduce(lambda x, y: x*y, p.shape) > min_size_quantize
-
     weights_to_be_quantized = [
         p for n, p in model.features[1:11].named_parameters()
         if is_to_be_quantized(n, only_conv) and 'weight' in n
@@ -87,13 +77,7 @@ def get_model(learning_rate=1e-3, momentum=None,
         {'params': bn_biases}
     ]
     #params: parameter group to train seperately
-    if optimizer_func == optim.Adam:
-        optimizer = optim.Adam(params, lr=learning_rate)
-    elif optimizer_func == optim.SGD:
-        optimizer = optim.SGD(params, lr=learning_rate, 
-            momentum=momentum, weight_decay=weight_decay)
-    else:
-        raise Exception('only ADAM and SGD supported')
+    optimizer = optim.Adam(params, lr=learning_rate)
 
     loss = nn.CrossEntropyLoss().cuda()
     model = model.cuda()  # move the model to gpu
