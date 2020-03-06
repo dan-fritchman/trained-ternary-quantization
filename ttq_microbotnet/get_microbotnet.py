@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.optim as optim
 
 import sys
-sys.path.append('../vanilla_microbotnet/')
 from fd_mobilenet_v3 import FdMobileNetV3Imp2
 from functools import reduce
 
