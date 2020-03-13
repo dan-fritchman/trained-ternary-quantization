@@ -78,7 +78,7 @@ def train(model, loss, optimization_step_fn,
 
         # it watches test accuracy
         # and if accuracy isn't improving then training stops
-        if _is_early_stopping(all_losses, patience, threshold):
+        if False and _is_early_stopping(all_losses, patience, threshold):
             print('early stopping!')
             break
 
