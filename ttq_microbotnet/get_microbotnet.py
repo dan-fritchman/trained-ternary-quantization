@@ -14,7 +14,11 @@ def load_model(model, file_name):
             new_key = key.replace('module.', '')
             reformat_state[new_key] = state[key]
         return reformat_state
-    state = torch.load(file_name,  map_location='cpu')['net']
+    loaded_state =  torch.load(file_name,  map_location='cpu')
+    if 'net' in loaded_state
+        state = loaded_state['net']
+    else:
+        state = loaded_state
     reformat_state = reformat_dict(state)
     model.load_state_dict(reformat_state)
     # do we have to return?
