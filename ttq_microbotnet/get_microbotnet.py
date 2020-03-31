@@ -15,7 +15,7 @@ def load_model(model, file_name):
             reformat_state[new_key] = state[key]
         return reformat_state
     loaded_state =  torch.load(file_name,  map_location='cpu')
-    if 'net' in loaded_state
+    if 'net' in loaded_state:
         state = loaded_state['net']
     else:
         state = loaded_state
