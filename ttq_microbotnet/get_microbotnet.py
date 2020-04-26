@@ -20,7 +20,13 @@ def load_model(model, file_name):
     else:
         state = loaded_state
     reformat_state = reformat_dict(state)
-    model.load_state_dict(reformat_state)
+
+    new_reformat_state = {}
+    for key in model.state_dict().keys():
+      new_reformat_state[key] = reformat_state[key]
+    model.load_state_dict(new_reformat_state)
+
+    model.load_state_dict(new_reformat_state)
     # do we have to return?
 
 def is_to_be_quantized(n, only_conv):
