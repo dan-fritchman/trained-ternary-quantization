@@ -53,7 +53,7 @@ def optimization_step(model, loss, x_batch, y_batch, optimizer_list, t):
     # 3. scaling factors for each layer
     optimizer, optimizer_fp, optimizer_sf = optimizer_list
 
-    x_batch, y_batch = Variable(x_batch.cuda()), Variable(y_batch.cuda(async=True))
+    x_batch, y_batch = Variable(x_batch.cuda()), Variable(y_batch.cuda(non_blocking=True))
     # forward pass using quantized model
     logits = model(x_batch)
 
