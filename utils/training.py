@@ -7,7 +7,7 @@ def optimization_step(model, loss, x_batch, y_batch, optimizer):
     """Make forward pass and update model parameters with gradients."""
 
     # forward pass
-    x_batch, y_batch = Variable(x_batch.cuda()), Variable(y_batch.cuda(async=True))
+    x_batch, y_batch = Variable(x_batch.cuda()), Variable(y_batch.cuda(non_blocking=True))
     logits = model(x_batch)
 
     # compute logloss
@@ -123,7 +123,7 @@ def _evaluate(model, loss, val_iterator):
     for x_batch, y_batch in val_iterator:
 
         x_batch = Variable(x_batch.cuda(), volatile=True)
-        y_batch = Variable(y_batch.cuda(async=True), volatile=True)
+        y_batch = Variable(y_batch.cuda(non_blocking=True), volatile=True)
         n_batch_samples = y_batch.size()[0]
         logits = model(x_batch)
 
